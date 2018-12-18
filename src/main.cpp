@@ -3,6 +3,10 @@
 #include <SFML/Graphics.hpp>
 #include <TGUI/TGUI.hpp>
 
+std::vector< std::vector<bool> > nextFrame(std::vector< std::vector<bool> > visibile);
+
+using namespace std;
+
 int main()
 {
 	std::cout << "Opening window" << std::endl;
@@ -32,9 +36,14 @@ int main()
 		for(int y = 0; y < n_rects; y++){
 			rects[x][y].setSize(sf::Vector2f(rectSize, rectSize));
 			rects[x][y].setPosition(x*rectSize, y*rectSize);
-			isRectVisible[x][y] = true;
+			isRectVisible[x][y] = false;
 		}
 	}
+	isRectVisible[6][5] = true;
+	isRectVisible[5][5] = true;
+	isRectVisible[4][5] = true;
+	// isRectVisible[4][4] = true;
+	// isRectVisible[5][4] = true;
 	if(!img.loadFromFile("resources/background.jpg")){
 		// could not load image
 		std::cout << "Could not find image" << std::endl;
@@ -51,6 +60,11 @@ int main()
 				case sf::Event::Closed:
 					window.close();
 					break;
+				case sf::Event::MouseButtonReleased:
+					if(event.mouseButton.button == sf::Mouse::Left){
+						cout << "calculating next frame" << endl;
+						isRectVisible = nextFrame(isRectVisible);
+					}
 				default:
 					break;
 			}
@@ -61,10 +75,38 @@ int main()
 			for(int j = 0; j < rects[i].size(); j++){
 				if(isRectVisible[i][j])
 				{
-					window.draw(rects[i][i]);
+					window.draw(rects[i][j]);
 				}
 			}
 		}
 		window.display();
 	}
+}
+
+std::vector< std::vector<bool> > nextFrame(std::vector< std::vector<bool> > visibile){
+	// skipping the edges
+	std::vector< std::vector<bool> > result = visibile;
+	for(int i = 1; i < visibile.size()-1; i++){
+		for(int j = 1; j < visibile[i].size() - 1; j++){
+			int surroundCount = 0;
+			for(int dx = -1; dx <= 1; dx++){
+				for(int dy = -1; dy <= 1; dy++){
+					if(!(dx == 0 && dy == 0)){
+						if(visibile[i+dx][j+dy]){
+							surroundCount++;
+						}
+					}
+				}
+			}
+			if(surroundCount == 3){
+				result[i][j] = true;
+			}
+			else{
+				if(surroundCount != 2){
+					result[i][j] = false;
+				}
+			}
+		}
+	}
+	return result;
 }
