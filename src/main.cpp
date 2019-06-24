@@ -10,7 +10,7 @@ using namespace std;
 int main()
 {
 	std::cout << "Opening window" << std::endl;
-	sf::RenderWindow window(sf::VideoMode(500, 500), "Game of Life");
+	sf::RenderWindow window(sf::VideoMode(500, 500), "SFML  Game of Life");
 	tgui::Gui gui(window);
 	tgui::Button::Ptr button;
 	arma::fvec2 circlePos {250, 250};
